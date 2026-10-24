@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/dingtalk-pending-context.js",
+        "timeout": 20
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/dingtalk-pending-reply.js",
+        "timeout": 120,
+        "loop_limit": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+---
+description: 钉钉工单唤醒时在 Agent 中默认使用 Composer 2.5 并立即执行 inbox 任务
+globs:
+alwaysApply: false
+---
+
+# 钉钉 Agent 默认行为
+
+当会话由 `dingtalk-agent-wake.flag` / `sessionStart` 注入「钉钉工单」上下文时：
+
+1. **模型**：使用 **Composer 2.5**（勿用 Grok 等 unless 用户改口）。
+2. **不要等待**：直接读取 `inbox` 中 job JSON，按 `AGENT-PROMPTS.md` 执行，无需用户再粘贴说明。
+3. **DIP_RUN**：挂载 `yurun-dip-publish`，处理完写 `pending-reply.json` 回钉钉。

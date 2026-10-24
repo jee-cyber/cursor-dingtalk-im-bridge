@@ -1,0 +1,12 @@
+.DS_Store
+.cursor/hooks/dingtalk-im-bridge/inbox/
+.cursor/hooks/dingtalk-im-bridge/state/
+.cursor/hooks/dingtalk-im-bridge/media/
+.cursor/hooks/dingtalk-im-bridge/pending-reply.json
+.cursor/hooks/dingtalk-agent-wake.flag
+.cursor/hooks/dingtalk-auto-reply.flag
+.cursor/hooks/dingtalk-code.flag
+.cursor/hooks/dingtalk-open-chat-prompt.txt
+.cursor/hooks/dingtalk-auto-prompt.md
+.cursor/hooks/dingtalk-last-inject.txt
+.cursor/hooks/last-gate-reminder.txt
