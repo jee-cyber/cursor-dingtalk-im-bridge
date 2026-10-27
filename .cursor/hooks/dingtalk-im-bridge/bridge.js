@@ -149,7 +149,7 @@ function main() {
   store.ensureDirs();
   fs.mkdirSync(config.dirs.media, { recursive: true });
   process.stderr.write(
-    'dingtalk-im-bridge started (at-me + all-direct). policy: autoCodeInGroup=true, complexClarify→direct, media=on\n'
+    'dingtalk-im-bridge started (at-me + all-direct). policy: autoCodeInGroup=true, gate=云交付+工作类, media=on\n'
   );
   spawnListener('at-me');
   spawnListener('all-direct');

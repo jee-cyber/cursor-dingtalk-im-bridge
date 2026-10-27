@@ -16,8 +16,9 @@ const { resolveAgentBin } = require('./resolve-agent-bin');
 const { sendPendingReply, pendingPath } = require('./send-pending-reply');
 const { collectPendingReply } = require('./collect-pending-reply');
 const { formatConsultantBody } = require('./format-consultant-body');
+const { resolveLogDir } = require('./log-dir');
 
-const LOG_DIR = path.join(process.env.HOME || '', 'Library/Logs/yurun-dingtalk-bridge');
+const LOG_DIR = resolveLogDir();
 
 function log(jobId, msg) {
   fs.mkdirSync(LOG_DIR, { recursive: true });
@@ -44,10 +45,9 @@ function releaseLock(lock) {
 
 function writeFallbackReply(job, agentLog, reason) {
   const body = [
-    `【${job.jobId}】自动处理结束（${reason}）`,
-    '请查看本机日志：',
-    agentLog,
-    '若需续跑：node .cursor/hooks/dingtalk-im-bridge/run-auto-agent.js ' + job.jobId,
+    `【${job.requirementId || '工单'}】自动处理未完成（${reason}）`,
+    '常见原因：Cursor 云端暂时不可用（日志里 Error: [unavailable]），或网络/登录过期。',
+    '请稍后重试；我恢复后会续跑。若紧急请在本群再 @ 一次或单聊说明需求号。',
   ].join('\n');
   fs.writeFileSync(
     pendingPath,

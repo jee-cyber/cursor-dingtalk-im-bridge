@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LABEL="com.yurun.dingtalk-im-bridge"
+LABEL="com.cursor.dingtalk-im-bridge"
 PLIST_DEST="$HOME/Library/LaunchAgents/${LABEL}.plist"
 
 launchctl bootout "gui/$(id -u)/${LABEL}" 2>/dev/null || true

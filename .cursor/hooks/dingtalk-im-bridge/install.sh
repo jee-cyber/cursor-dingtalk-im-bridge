@@ -6,9 +6,9 @@ BRIDGE="$ROOT/.cursor/hooks/dingtalk-im-bridge"
 HOOKS="$ROOT/.cursor/hooks"
 NODE="$(command -v node)"
 DWS="$(command -v dws || true)"
-LABEL="com.yurun.dingtalk-im-bridge"
+LABEL="com.cursor.dingtalk-im-bridge"
 PLIST_DEST="$HOME/Library/LaunchAgents/${LABEL}.plist"
-LOG_DIR="$HOME/Library/Logs/yurun-dingtalk-bridge"
+LOG_DIR="$HOME/Library/Logs/cursor-dingtalk-bridge"
 
 if [[ -z "$NODE" ]]; then
   echo "未找到 node，请先安装 Node.js 并加入 PATH。" >&2
@@ -30,6 +30,13 @@ CURSOR_BIN="/Applications/Cursor.app/Contents/Resources/app/bin"
 USER_BIN="${HOME}/bin"
 export PATH="$USER_BIN:$NODE_BIN:$DWS_BIN:$CURSOR_BIN:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
 
+DWS_PROFILE_PLIST=""
+if [[ -n "${DWS_PROFILE:-}" ]]; then
+  DWS_PROFILE_PLIST="
+    <key>DWS_PROFILE</key>
+    <string>${DWS_PROFILE}</string>"
+fi
+
 cat > "$PLIST_DEST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -47,7 +54,7 @@ cat > "$PLIST_DEST" <<EOF
   <key>EnvironmentVariables</key>
   <dict>
     <key>PATH</key>
-    <string>${USER_BIN}:${NODE_BIN}:${DWS_BIN}:${CURSOR_BIN}:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+    <string>${USER_BIN}:${NODE_BIN}:${DWS_BIN}:${CURSOR_BIN}:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>${DWS_PROFILE_PLIST}
   </dict>
   <key>RunAtLoad</key>
   <true/>

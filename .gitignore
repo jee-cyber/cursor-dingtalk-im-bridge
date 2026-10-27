@@ -10,3 +10,4 @@
 .cursor/hooks/dingtalk-auto-prompt.md
 .cursor/hooks/dingtalk-last-inject.txt
 .cursor/hooks/last-gate-reminder.txt
+.cursor/hooks/dingtalk-im-bridge/env.local.ps1

@@ -4,29 +4,12 @@ const crypto = require('crypto');
 const config = require('./config');
 const store = require('./store');
 const { notifyAgentWake } = require('./notify');
+const { evaluateInbound } = require('./sender-gate');
+const { classifyIntent, parseReqId } = require('./intent');
 
 function newJobId() {
   const t = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
   return `${t}-${crypto.randomBytes(3).toString('hex')}`;
-}
-
-function parseReqId(text) {
-  const m = text.match(config.reqIdPattern);
-  return m ? m[0].toUpperCase() : null;
-}
-
-function classifyIntent(text) {
-  const hasReq = !!parseReqId(text);
-  if (config.dipKeywords.test(text) && !hasReq) {
-    return 'DIP';
-  }
-  if (hasReq || config.featureKeywords.test(text)) {
-    return 'NEW_FEATURE';
-  }
-  if (config.handleKeywords.test(text)) {
-    return 'HANDLE';
-  }
-  return 'GENERAL';
 }
 
 function channelOf(evt, listenKind) {
@@ -118,8 +101,6 @@ async function handleMessage(evt, listenKind) {
 
   const seen = store.loadSeen();
   if (seen[eventId]) return;
-  seen[eventId] = Date.now();
-  store.saveSeen(seen);
 
   const channel = channelOf(evt, listenKind);
   const convKey = store.conversationKey(evt);
@@ -136,6 +117,21 @@ async function handleMessage(evt, listenKind) {
     conversation_id: evt.conversation_id,
     sender_open_dingtalk_id: evt.sender_open_dingtalk_id,
   };
+
+  const jobForGate =
+    conv.phase !== 'idle' && conv.jobId ? store.readJob(conv.jobId) : null;
+  const gate = await evaluateInbound(evt, conv, jobForGate);
+  if (!gate.allow) {
+    seen[eventId] = Date.now();
+    store.saveSeen(seen);
+    process.stderr.write(
+      `[gate] skip sender=${evt.sender || ''} ${gate.reason || ''}\n`
+    );
+    return [];
+  }
+
+  seen[eventId] = Date.now();
+  store.saveSeen(seen);
 
   replies.push({ ...replyTarget, text: config.ackText });
 
@@ -256,6 +252,28 @@ async function handleMessage(evt, listenKind) {
       replies.push({ ...replyTarget, text: config.templates.queuedAgent(job.jobId) });
       conv = { phase: 'SPEC_BOOTSTRAP', jobId: job.jobId };
     }
+  } else if (intent === 'HANDLE') {
+    const job = {
+      jobId: newJobId(),
+      type: 'DIP_UNKNOWN',
+      phase: 'AWAIT_SYSTEM',
+      requirementId: null,
+      title: null,
+      specDir: null,
+      dipSystem: null,
+      skills: ['yurun-dip-publish'],
+      conversation_id: evt.conversation_id,
+      sender_open_dingtalk_id: evt.sender_open_dingtalk_id,
+      sender_display: evt.sender || '',
+      channel,
+      messages: [messageRecord(evt, text, channel)],
+      autoCodeAfterClarify: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    store.writeJob(job);
+    replies.push({ ...replyTarget, text: config.templates.askSystem });
+    conv = { phase: 'AWAIT_SYSTEM', jobId: job.jobId };
   }
 
   conversations[convKey] = conv;

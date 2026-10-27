@@ -12,8 +12,7 @@ const { handleMessage, classifyIntent } = require('./router');
 const { sendText } = require('./reply');
 const store = require('./store');
 
-const SELF_OPEN_ID =
-  process.env.DINGTALK_SELF_OPEN_ID || process.env.E2E_REPLY_OPEN_ID || '';
+const SELF_OPEN_ID = 'D3YJQUBtHlSuqq3NKc8LbuGVsXbB2V3zC';
 const FAKE_SENDER = 'D_FAKE_SENDER_E2E_TEST_001';
 const results = [];
 

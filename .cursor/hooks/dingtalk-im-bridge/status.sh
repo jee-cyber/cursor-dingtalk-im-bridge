@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LABEL="com.yurun.dingtalk-im-bridge"
-LOG_DIR="$HOME/Library/Logs/yurun-dingtalk-bridge"
+LABEL="com.cursor.dingtalk-im-bridge"
+LOG_DIR="$HOME/Library/Logs/cursor-dingtalk-bridge"
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 INBOX="$ROOT/.cursor/hooks/dingtalk-im-bridge/inbox"
 
